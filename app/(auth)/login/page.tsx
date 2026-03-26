@@ -1,15 +1,51 @@
-import { Metadata } from 'next'
-import LoginForm from '@/components/auth/LoginForm'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Entrar — CS Academy',
-  description: 'Acesse a plataforma exclusiva CS Academy',
-}
+import { useState } from 'react'
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import Link from 'next/link'
 
 export default function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    const formData = new FormData(e.currentTarget)
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.get('email'),
+          password: formData.get('password'),
+        }),
+      })
+
+      if (res.ok) {
+        window.location.href = '/dashboard'
+        return
+      }
+
+      const data = await res.json()
+      setError(
+        data.error === 'credenciais'
+          ? 'E-mail ou senha incorretos. Verifique e tente novamente.'
+          : 'Erro ao fazer login. Tente novamente.'
+      )
+    } catch {
+      setError('Erro de conexão. Verifique sua internet e tente novamente.')
+    }
+
+    setLoading(false)
+  }
+
   return (
     <main className="min-h-screen bg-cs-black flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background decorativo */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-cs-gold/5 blur-[120px]" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-cs-gold/3 blur-[100px]" />
@@ -23,7 +59,6 @@ export default function LoginPage() {
       </div>
 
       <div className="w-full max-w-md relative z-10">
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-baseline gap-1 mb-3">
             <span className="text-4xl font-black text-cs-gold tracking-tight">CS</span>
@@ -36,7 +71,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Card */}
         <div
           className="bg-cs-black-surface rounded-2xl p-8 border"
           style={{
@@ -51,7 +85,70 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <LoginForm />
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-cs-white-muted">E-mail</label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cs-white-dim">
+                  <Mail className="w-4 h-4" />
+                </span>
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  required
+                  autoComplete="email"
+                  className="w-full bg-cs-black border border-cs-border rounded-xl pl-10 pr-4 py-3 text-sm text-cs-white placeholder:text-cs-white-dim focus:outline-none focus:border-cs-gold transition-colors"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-cs-white-muted">Senha</label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cs-white-dim">
+                  <Lock className="w-4 h-4" />
+                </span>
+                <input
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  required
+                  autoComplete="current-password"
+                  className="w-full bg-cs-black border border-cs-border rounded-xl pl-10 pr-4 py-3 text-sm text-cs-white placeholder:text-cs-white-dim focus:outline-none focus:border-cs-gold transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-cs-white-dim hover:text-cs-white-muted transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
+                <p className="text-sm text-red-400">{error}</p>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-cs-gold hover:bg-cs-gold-hover text-cs-black font-bold py-3.5 rounded-xl transition-colors text-sm mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Entrando...' : 'Entrar na plataforma'}
+            </button>
+
+            <p className="text-center text-sm text-cs-white-dim">
+              Ainda não tem acesso?{' '}
+              <Link href="/cadastro" className="text-cs-gold hover:text-cs-gold-hover font-medium transition-colors">
+                Criar conta
+              </Link>
+            </p>
+          </form>
         </div>
 
         <p className="text-center text-xs text-cs-white-dim mt-6 leading-relaxed">
