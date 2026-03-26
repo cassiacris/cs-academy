@@ -1,27 +1,15 @@
 import { Metadata } from 'next'
-import { loginAction } from './actions'
-import { Mail, Lock } from 'lucide-react'
+import LoginForm from '@/components/auth/LoginForm'
 
 export const metadata: Metadata = {
   title: 'Entrar — CS Academy',
   description: 'Acesse a plataforma exclusiva CS Academy',
 }
 
-interface PageProps {
-  searchParams: { error?: string }
-}
-
-export default function LoginPage({ searchParams }: PageProps) {
-  const errorMsg =
-    searchParams.error === 'credenciais'
-      ? 'E-mail ou senha incorretos. Verifique e tente novamente.'
-      : searchParams.error === 'geral'
-      ? 'Erro ao fazer login. Tente novamente.'
-      : null
-
+export default function LoginPage() {
   return (
     <main className="min-h-screen bg-cs-black flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background decorative elements */}
+      {/* Background decorativo */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-cs-gold/5 blur-[120px]" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-cs-gold/3 blur-[100px]" />
@@ -63,64 +51,7 @@ export default function LoginPage({ searchParams }: PageProps) {
             </p>
           </div>
 
-          <form action={loginAction} className="space-y-5">
-            {/* Email */}
-            <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-cs-white-muted">E-mail</label>
-              <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cs-white-dim">
-                  <Mail className="w-4 h-4" />
-                </span>
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  required
-                  autoComplete="email"
-                  className="w-full bg-cs-black border border-cs-border rounded-xl pl-10 pr-4 py-3 text-sm text-cs-white placeholder:text-cs-white-dim focus:outline-none focus:border-cs-gold transition-colors"
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-cs-white-muted">Senha</label>
-              <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cs-white-dim">
-                  <Lock className="w-4 h-4" />
-                </span>
-                <input
-                  name="password"
-                  type="password"
-                  placeholder="••••••••"
-                  required
-                  autoComplete="current-password"
-                  className="w-full bg-cs-black border border-cs-border rounded-xl pl-10 pr-4 py-3 text-sm text-cs-white placeholder:text-cs-white-dim focus:outline-none focus:border-cs-gold transition-colors"
-                />
-              </div>
-            </div>
-
-            {/* Error */}
-            {errorMsg && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
-                <p className="text-sm text-red-400">{errorMsg}</p>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className="w-full bg-cs-gold hover:bg-cs-gold-hover text-cs-black font-bold py-3.5 rounded-xl transition-colors text-sm mt-2"
-            >
-              Entrar na plataforma
-            </button>
-
-            <p className="text-center text-sm text-cs-white-dim">
-              Ainda não tem acesso?{' '}
-              <a href="/cadastro" className="text-cs-gold hover:text-cs-gold-hover font-medium transition-colors">
-                Criar conta
-              </a>
-            </p>
-          </form>
+          <LoginForm />
         </div>
 
         <p className="text-center text-xs text-cs-white-dim mt-6 leading-relaxed">

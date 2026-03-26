@@ -3,91 +3,91 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
-import Button from '@/components/ui/Button'
-import Input from '@/components/ui/Input'
 
 export default function LoginForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
-
-    if (!email || !password) {
-      setError('Preencha todos os campos')
-      return
-    }
-
     setLoading(true)
 
+    const formData = new FormData(e.currentTarget)
+
     try {
-      const supabase = createClient()
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.get('email'),
+          password: formData.get('password'),
+        }),
       })
 
-      if (authError) {
-        if (authError.message === 'Invalid login credentials') {
-          setError('E-mail ou senha incorretos. Verifique e tente novamente.')
-        } else if (authError.message === 'Email not confirmed') {
-          setError('Confirme seu e-mail antes de entrar.')
-        } else {
-          setError(`Erro: ${authError.message}`)
-        }
+      if (res.ok) {
+        // Hard redirect para garantir que os cookies de sessão chegam ao middleware
+        window.location.href = '/dashboard'
         return
       }
 
-      window.location.href = '/dashboard'
+      const data = await res.json()
+      if (data.error === 'credenciais') {
+        setError('E-mail ou senha incorretos. Verifique e tente novamente.')
+      } else {
+        setError('Erro ao fazer login. Tente novamente.')
+      }
     } catch {
-      setError('Erro inesperado. Tente novamente.')
-    } finally {
-      setLoading(false)
+      setError('Erro de conexão. Verifique sua internet e tente novamente.')
     }
+
+    setLoading(false)
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <Input
-        label="E-mail"
-        type="email"
-        placeholder="seu@email.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        icon={<Mail className="w-4 h-4" />}
-        autoComplete="email"
-        required
-      />
+      <div className="space-y-1.5">
+        <label className="block text-sm font-medium text-cs-white-muted">E-mail</label>
+        <div className="relative">
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cs-white-dim">
+            <Mail className="w-4 h-4" />
+          </span>
+          <input
+            name="email"
+            type="email"
+            placeholder="seu@email.com"
+            required
+            autoComplete="email"
+            className="w-full bg-cs-black border border-cs-border rounded-xl pl-10 pr-4 py-3 text-sm text-cs-white placeholder:text-cs-white-dim focus:outline-none focus:border-cs-gold transition-colors"
+          />
+        </div>
+      </div>
 
-      <Input
-        label="Senha"
-        type={showPassword ? 'text' : 'password'}
-        placeholder="••••••••"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        icon={<Lock className="w-4 h-4" />}
-        rightElement={
+      <div className="space-y-1.5">
+        <label className="block text-sm font-medium text-cs-white-muted">Senha</label>
+        <div className="relative">
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cs-white-dim">
+            <Lock className="w-4 h-4" />
+          </span>
+          <input
+            name="password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="••••••••"
+            required
+            autoComplete="current-password"
+            className="w-full bg-cs-black border border-cs-border rounded-xl pl-10 pr-4 py-3 text-sm text-cs-white placeholder:text-cs-white-dim focus:outline-none focus:border-cs-gold transition-colors"
+          />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="text-cs-white-dim hover:text-cs-white-muted transition-colors"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-cs-white-dim hover:text-cs-white-muted transition-colors"
             tabIndex={-1}
           >
-            {showPassword ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
-        }
-        autoComplete="current-password"
-        required
-      />
+        </div>
+      </div>
 
       {error && (
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
@@ -95,27 +95,20 @@ export default function LoginForm() {
         </div>
       )}
 
-      <Button
+      <button
         type="submit"
-        variant="gold"
-        size="lg"
-        loading={loading}
-        className="w-full mt-2"
+        disabled={loading}
+        className="w-full bg-cs-gold hover:bg-cs-gold-hover text-cs-black font-bold py-3.5 rounded-xl transition-colors text-sm mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {loading ? 'Entrando...' : 'Entrar na plataforma'}
-      </Button>
+      </button>
 
-      <div className="text-center">
-        <p className="text-sm text-cs-white-dim">
-          Ainda não tem acesso?{' '}
-          <Link
-            href="/cadastro"
-            className="text-cs-gold hover:text-cs-gold-hover font-medium transition-colors"
-          >
-            Criar conta
-          </Link>
-        </p>
-      </div>
+      <p className="text-center text-sm text-cs-white-dim">
+        Ainda não tem acesso?{' '}
+        <Link href="/cadastro" className="text-cs-gold hover:text-cs-gold-hover font-medium transition-colors">
+          Criar conta
+        </Link>
+      </p>
     </form>
   )
 }
