@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -15,33 +16,29 @@ export default function LoginPage() {
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.get('email'),
-          password: formData.get('password'),
-        }),
-      })
+      const supabase = createClient()
+      const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
 
-      if (res.ok) {
-        window.location.href = '/dashboard'
+      if (authError) {
+        setError(
+          authError.message.includes('Invalid login credentials') || authError.message.includes('invalid_credentials')
+            ? 'E-mail ou senha incorretos. Verifique e tente novamente.'
+            : `Erro: ${authError.message}`
+        )
+        setLoading(false)
         return
       }
 
-      const data = await res.json()
-      setError(
-        data.error === 'credenciais'
-          ? 'E-mail ou senha incorretos. Verifique e tente novamente.'
-          : 'Erro ao fazer login. Tente novamente.'
-      )
+      // Sessão gravada nos cookies pelo browser client — hard redirect para o middleware ler
+      window.location.href = '/dashboard'
     } catch {
       setError('Erro de conexão. Verifique sua internet e tente novamente.')
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   return (
