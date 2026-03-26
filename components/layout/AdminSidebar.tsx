@@ -11,6 +11,7 @@ import {
   LogOut,
   ArrowLeft,
   Shield,
+  Package,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
@@ -18,6 +19,7 @@ import { createClient } from '@/lib/supabase/client'
 const adminNavItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/cursos', label: 'Cursos', icon: BookOpen },
+  { href: '/admin/produtos', label: 'Produtos', icon: Package },
   { href: '/admin/alunas', label: 'Alunas', icon: Users },
   { href: '/admin/feed', label: 'Feed', icon: MessageSquare },
   { href: '/admin/materiais', label: 'Materiais', icon: FolderOpen },

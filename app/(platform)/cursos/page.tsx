@@ -3,7 +3,8 @@ import { BookOpen, Clock, Play, Download, FileText, Table2, Sparkles, Music, Bra
 import { mockCourses, mockMeditations, mockTools } from '@/lib/mock-data'
 import CourseCard from '@/components/cursos/CourseCard'
 import { formatDuration } from '@/lib/utils'
-import { Course } from '@/types'
+import { Course, CourseCategory } from '@/types'
+import { createClient as createSupabaseAdmin } from '@supabase/supabase-js'
 
 const PRODUCT_ICONS: Record<string, React.ReactNode> = {
   template: <FileText className="w-5 h-5 text-cs-gold" />,
@@ -85,32 +86,67 @@ function MeditationCard({ course }: { course: Course }) {
   )
 }
 
-export default function CursosPage() {
+async function fetchProductsFromDB(): Promise<Course[] | null> {
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    if (!supabaseUrl || !serviceKey) return null
+
+    const supabase = createSupabaseAdmin(supabaseUrl, serviceKey)
+    const { data, error } = await supabase
+      .from('courses')
+      .select('*')
+      .order('category', { ascending: true })
+
+    if (error || !data || data.length === 0) return null
+    return data as Course[]
+  } catch {
+    return null
+  }
+}
+
+export default async function CursosPage() {
+  const dbProducts = await fetchProductsFromDB()
+
+  // Use DB data if available, otherwise fall back to mock data
+  const allCourses = dbProducts
+    ? dbProducts.filter((p) => p.product_type === 'curso')
+    : mockCourses
+  const allMeditations = dbProducts
+    ? dbProducts.filter((p) => p.product_type === 'meditacao')
+    : mockMeditations
+  const allTools = dbProducts
+    ? dbProducts.filter((p) =>
+        p.product_type && ['template', 'planilha', 'prompt', 'ebook'].includes(p.product_type)
+      )
+    : mockTools
+
   const sections = [
     {
-      id: 'mentalidade',
+      id: 'mentalidade' as CourseCategory,
       title: 'Mentalidade',
       description: 'Reprogramações, meditações e ferramentas para transformar sua mente de dentro para fora.',
       icon: <Brain className="w-5 h-5 text-cs-gold" />,
-      courses: mockCourses.filter((c) => c.category === 'mentalidade'),
-      meditations: mockMeditations,
+      courses: allCourses.filter((c) => c.category === 'mentalidade'),
+      meditations: allMeditations.filter((m) => !m.category || m.category === 'mentalidade'),
     },
     {
-      id: 'negocios-femininos',
+      id: 'negocios-femininos' as CourseCategory,
       title: 'Negócios Femininos',
       description: 'Posicionamento estratégico, mentalidade de alto valor e construção de autoridade real.',
       icon: <Sparkles className="w-5 h-5 text-cs-gold" />,
-      courses: mockCourses.filter((c) => c.category === 'negocios-femininos'),
+      courses: allCourses.filter((c) => c.category === 'negocios-femininos'),
       meditations: [],
     },
     {
-      id: 'solucoes-ferramentas',
+      id: 'solucoes-ferramentas' as CourseCategory,
       title: 'Soluções e Ferramentas',
       description: 'Templates, planilhas e prompts prontos para usar no seu negócio agora.',
       icon: <FileText className="w-5 h-5 text-cs-gold" />,
       courses: [],
       meditations: [],
-      tools: mockTools,
+      tools: allTools.filter((t) => t.category === 'solucoes-ferramentas'),
     },
   ]
 
