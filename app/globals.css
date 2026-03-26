@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0A0A0A;
+  --foreground: #F5F0E8;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: #0A0A0A;
+  color: #F5F0E8;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #141414;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C9A435;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #E2C06A;
+}
+
+/* Selection */
+::selection {
+  background-color: rgba(201, 164, 53, 0.3);
+  color: #F5F0E8;
+}
+
+/* Focus outline */
+:focus-visible {
+  outline: 2px solid #C9A435;
+  outline-offset: 2px;
+}
+
+/* Smooth transitions */
+a,
+button {
+  transition: all 0.2s ease;
+}
+
+/* Input autofill dark mode */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #F5F0E8;
+  -webkit-box-shadow: 0 0 0px 1000px #1A1A1A inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+@layer utilities {
+  .gold-text {
+    color: #C9A435;
+  }
+
+  .gold-gradient-text {
+    background: linear-gradient(135deg, #C9A435 0%, #E2C06A 50%, #C9A435 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gold-border-glow {
+    border: 1px solid rgba(201, 164, 53, 0.4);
+    box-shadow: 0 0 20px rgba(201, 164, 53, 0.1), inset 0 0 20px rgba(201, 164, 53, 0.05);
+  }
+
+  .card-surface {
+    background-color: #141414;
+    border: 1px solid #2A2A2A;
+    border-radius: 12px;
+  }
+
+  .card-hover {
+    transition: all 0.2s ease;
+  }
+
+  .card-hover:hover {
+    border-color: rgba(201, 164, 53, 0.3);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    transform: translateY(-1px);
+  }
+}
