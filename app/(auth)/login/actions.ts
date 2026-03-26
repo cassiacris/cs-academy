@@ -7,12 +7,29 @@ export async function loginAction(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
 
+  if (!email || !password) {
+    redirect('/login?error=credenciais')
+  }
+
   const supabase = createClient()
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  let authError: string | null = null
 
-  if (error) {
-    if (error.message === 'Invalid login credentials') {
+  try {
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) {
+      authError = error.message
+    }
+  } catch {
+    redirect('/login?error=geral')
+  }
+
+  if (authError) {
+    if (
+      authError.includes('Invalid login credentials') ||
+      authError.includes('invalid_credentials') ||
+      authError.includes('Email not confirmed')
+    ) {
       redirect('/login?error=credenciais')
     }
     redirect('/login?error=geral')
