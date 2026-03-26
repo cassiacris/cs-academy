@@ -1,11 +1,11 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   const { email, password } = await request.json()
 
   // Coletamos os cookies que o Supabase quer setar
-  const cookiesToSet: Array<{ name: string; value: string; options: CookieOptions }> = []
+  const cookiesToSet: { name: string; value: string; options: Record<string, unknown> }[] = []
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,7 +15,8 @@ export async function POST(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
-        setAll(cookies: Array<{ name: string; value: string; options: CookieOptions }>) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setAll(cookies: any[]) {
           cookiesToSet.push(...cookies)
         },
       },
