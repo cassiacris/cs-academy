@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
@@ -9,7 +8,6 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 
 export default function LoginForm() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -40,13 +38,12 @@ export default function LoginForm() {
         } else if (authError.message === 'Email not confirmed') {
           setError('Confirme seu e-mail antes de entrar.')
         } else {
-          setError('Erro ao fazer login. Tente novamente.')
+          setError(`Erro: ${authError.message}`)
         }
         return
       }
 
-      router.push('/dashboard')
-      router.refresh()
+      window.location.href = '/dashboard'
     } catch {
       setError('Erro inesperado. Tente novamente.')
     } finally {
