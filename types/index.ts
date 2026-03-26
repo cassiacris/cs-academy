@@ -1,3 +1,5 @@
+export type CourseCategory = 'mentalidade' | 'negocios-femininos' | 'solucoes-ferramentas'
+
 export interface Course {
   id: string
   slug: string
@@ -11,6 +13,9 @@ export interface Course {
   has_free_preview?: boolean
   purchase_url?: string
   price?: string
+  category?: CourseCategory
+  is_free?: boolean
+  product_type?: 'curso' | 'meditacao' | 'template' | 'planilha' | 'prompt' | 'ebook'
 }
 
 export interface Module {

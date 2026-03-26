@@ -1,4 +1,4 @@
-import { Course, Module, FeedPost, Material } from '@/types'
+import { Course, Module, FeedPost, Material, CourseCategory } from '@/types'
 
 export const mockCourses: Course[] = [
   {
@@ -14,6 +14,8 @@ export const mockCourses: Course[] = [
     has_free_preview: true,
     purchase_url: 'https://pay.hotmart.com/box-magnetize',
     price: 'R$ 97',
+    category: 'mentalidade' as CourseCategory,
+    product_type: 'curso',
     modules: [
       {
         id: 'm1',
@@ -152,6 +154,8 @@ export const mockCourses: Course[] = [
     has_free_preview: true,
     purchase_url: 'https://pay.hotmart.com/metodo-pav',
     price: 'R$ 997',
+    category: 'negocios-femininos' as CourseCategory,
+    product_type: 'curso',
     modules: [
       {
         id: 'm5',
@@ -327,6 +331,122 @@ export const mockCourses: Course[] = [
         ],
       },
     ],
+  },
+]
+
+// Meditações gratuitas — Mentalidade
+export const mockMeditations: Course[] = [
+  {
+    id: '3',
+    slug: 'meditacao-manha',
+    title: 'Meditação da Manhã',
+    description: 'Sessão guiada de 10 minutos para começar o dia com foco, intenção e frequência de alto valor. Gratuita para todas.',
+    thumbnail_url: '',
+    total_lessons: 1,
+    total_duration: 10,
+    progress: 0,
+    is_free: true,
+    category: 'mentalidade' as CourseCategory,
+    product_type: 'meditacao',
+    modules: [
+      {
+        id: 'mm1',
+        course_id: '3',
+        title: 'Meditação Guiada',
+        order: 1,
+        lessons: [
+          {
+            id: 'lm1',
+            module_id: 'mm1',
+            title: 'Meditação da Manhã — Ativação do Dia',
+            youtube_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            duration_minutes: 10,
+            order: 1,
+            description: 'Meditação guiada para ativar seu foco, intenção e frequência de alto valor logo ao acordar.',
+            is_free: true,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: '4',
+    slug: 'meditacao-noturna',
+    title: 'Meditação Noturna',
+    description: 'Reprogramação subconsciente para ouvir enquanto você dorme. 15 minutos que trabalham enquanto você descansa.',
+    thumbnail_url: '',
+    total_lessons: 1,
+    total_duration: 15,
+    progress: 0,
+    is_free: true,
+    category: 'mentalidade' as CourseCategory,
+    product_type: 'meditacao',
+    modules: [
+      {
+        id: 'mm2',
+        course_id: '4',
+        title: 'Meditação Guiada',
+        order: 1,
+        lessons: [
+          {
+            id: 'lm2',
+            module_id: 'mm2',
+            title: 'Meditação Noturna — Frequência de Abundância',
+            youtube_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            duration_minutes: 15,
+            order: 1,
+            description: 'Sessão noturna para sintonizar seu subconsciente com a frequência da abundância enquanto você dorme.',
+            is_free: true,
+          },
+        ],
+      },
+    ],
+  },
+]
+
+// Soluções e Ferramentas
+export const mockTools: Course[] = [
+  {
+    id: '5',
+    slug: 'template-bio-instagram',
+    title: 'Pack de Bio — Instagram de Alto Valor',
+    description: '5 templates testados para bio do Instagram que posicionam você como autoridade e geram curiosidade imediata.',
+    thumbnail_url: '',
+    total_lessons: 0,
+    total_duration: 0,
+    price: 'R$ 27',
+    has_free_preview: false,
+    purchase_url: 'https://pay.hotmart.com/template-bio',
+    category: 'solucoes-ferramentas' as CourseCategory,
+    product_type: 'template',
+  },
+  {
+    id: '6',
+    slug: 'planilha-precificacao',
+    title: 'Planilha de Precificação sem Culpa',
+    description: 'Calcule seu preço ideal com base no seu valor real — não no mercado, não na concorrência. Inclui calculadora de hora e pacote.',
+    thumbnail_url: '',
+    total_lessons: 0,
+    total_duration: 0,
+    price: 'R$ 37',
+    has_free_preview: false,
+    purchase_url: 'https://pay.hotmart.com/planilha-precificacao',
+    category: 'solucoes-ferramentas' as CourseCategory,
+    product_type: 'planilha',
+  },
+  {
+    id: '7',
+    slug: 'prompts-conteudo-posicionamento',
+    title: '30 Prompts de Conteúdo que Posiciona',
+    description: 'Prompts prontos para criar conteúdo de autoridade no Instagram sem depender de inspiração ou seguir trends.',
+    thumbnail_url: '',
+    total_lessons: 0,
+    total_duration: 0,
+    price: 'R$ 17',
+    has_free_preview: false,
+    purchase_url: 'https://pay.hotmart.com/prompts-conteudo',
+    category: 'solucoes-ferramentas' as CourseCategory,
+    product_type: 'prompt',
   },
 ]
 
