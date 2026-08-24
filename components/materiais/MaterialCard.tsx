@@ -1,7 +1,4 @@
-'use client'
-
-import { useState } from 'react'
-import { FileText, Video, Music, ExternalLink, Download, BookOpen } from 'lucide-react'
+import { FileText, Video, Music, ExternalLink, Download } from 'lucide-react'
 import { Material } from '@/types'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
@@ -44,39 +41,6 @@ const typeConfig = {
 export default function MaterialCard({ material }: MaterialCardProps) {
   const config = typeConfig[material.type]
   const Icon = config.icon
-  const [convertingEpub, setConvertingEpub] = useState(false)
-  const [epubError, setEpubError] = useState<string | null>(null)
-
-  const handleConvertToEpub = async () => {
-    setConvertingEpub(true)
-    setEpubError(null)
-    try {
-      const res = await fetch('/api/materiais/epub', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: material.file_url, title: material.title }),
-      })
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => null)
-        throw new Error(data?.error ?? 'Não foi possível gerar o EPUB.')
-      }
-
-      const blob = await res.blob()
-      const downloadUrl = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = downloadUrl
-      link.download = `${material.title}.epub`
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      URL.revokeObjectURL(downloadUrl)
-    } catch (err) {
-      setEpubError(err instanceof Error ? err.message : 'Não foi possível gerar o EPUB.')
-    } finally {
-      setConvertingEpub(false)
-    }
-  }
 
   return (
     <div className="bg-cs-black-surface border border-cs-border rounded-xl p-5 flex flex-col gap-4 transition-all duration-200 hover:border-cs-border hover:shadow-card group card-hover">
@@ -111,22 +75,7 @@ export default function MaterialCard({ material }: MaterialCardProps) {
         >
           {material.type === 'link' ? 'Acessar' : material.type === 'video' ? 'Assistir' : 'Baixar'}
         </Button>
-
-        {material.type === 'pdf' && (
-          <Button
-            variant="ghost"
-            size="sm"
-            icon={<BookOpen className="w-3.5 h-3.5" />}
-            loading={convertingEpub}
-            onClick={handleConvertToEpub}
-            title="Converter para EPUB e ler no Kindle"
-          >
-            Kindle
-          </Button>
-        )}
       </div>
-
-      {epubError && <p className="text-xs text-red-400">{epubError}</p>}
     </div>
   )
 }
